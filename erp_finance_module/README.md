@@ -1,7 +1,5 @@
 # ERP Finance Module
 
-**IT2305 Continuous Assessment 1 — ERP System (Finance Module)**
-
 > Tech Stack: Vue 3 · Go (Gin) · PostgreSQL · Docker
 
 ---
@@ -139,20 +137,6 @@ This Finance Module integrates with other ERP modules via REST APIs using shared
 
 ---
 
-## 👥 Team Member Contributions (7 Members)
-
-| Member | Role                   | Tasks                                              |
-|--------|------------------------|----------------------------------------------------|
-| 1      | Team Lead / Backend    | Go project setup, main.go, routing, Docker         |
-| 2      | Backend Developer      | Budget & Expense handlers, DB queries              |
-| 3      | Backend Developer      | Invoice & Payroll handlers, JWT middleware         |
-| 4      | Frontend Lead          | Vue setup, Layout, Router, Auth store              |
-| 5      | Frontend Developer     | Dashboard & Reports views                          |
-| 6      | Frontend Developer     | Budget, Expenses, Invoices, Payroll views          |
-| 7      | DevOps / DB / Docs     | docker-compose, init.sql, README, Postman/Swagger  |
-
----
-
 ## 🗄️ PostgreSQL Installation (Local Dev)
 
 > **Note:** You do NOT need PostgreSQL installed locally — Docker handles it.
@@ -176,7 +160,6 @@ sudo apt install postgresql postgresql-contrib
 sudo systemctl start postgresql
 ```
 
----
 
 ## 🏆 Bonus Features Implemented
 - JWT Authentication & route protection
