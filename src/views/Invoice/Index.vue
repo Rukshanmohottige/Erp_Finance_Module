@@ -1,24 +1,22 @@
 <template>
   <div>
     <div class="page-header">
-      <h2>Payroll</h2>
-      <button class="btn btn-primary" @click="openModal()">+ Add Payroll</button>
+      <h2>Invoices</h2>
+      <button class="btn btn-primary" @click="openModal()">+ New Invoice</button>
     </div>
     <div class="card">
       <table>
-        <thead><tr><th>Employee ID</th><th>Name</th><th>Department</th><th>Basic</th><th>Net Salary</th><th>Period</th><th>Status</th><th>Actions</th></tr></thead>
+        <thead><tr><th>Invoice #</th><th>Vendor</th><th>Amount</th><th>Due Date</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody>
-          <tr v-for="p in payroll" :key="p.id">
-            <td>{{ p.employee_id }}</td>
-            <td><strong>{{ p.employee_name }}</strong></td>
-            <td>{{ p.department }}</td>
-            <td>${{ fmt(p.basic_salary) }}</td>
-            <td><strong>${{ fmt(p.net_salary) }}</strong></td>
-            <td>{{ p.pay_period }}</td>
-            <td><span :class="['badge', p.status === 'processed' ? 'badge-success' : 'badge-warning']">{{ p.status }}</span></td>
+          <tr v-for="inv in invoices" :key="inv.id">
+            <td><strong>{{ inv.invoice_number }}</strong></td>
+            <td>{{ inv.vendor_name }}</td>
+            <td>${{ fmt(inv.amount) }}</td>
+            <td>{{ inv.due_date }}</td>
+            <td><span :class="['badge', inv.status === 'paid' ? 'badge-success' : 'badge-warning']">{{ inv.status }}</span></td>
             <td>
-              <button class="btn btn-outline" style="margin-right:6px" @click="openModal(p)">Edit</button>
-              <button class="btn btn-danger" @click="del(p.id)">Delete</button>
+              <button class="btn btn-outline" style="margin-right:6px" @click="openModal(inv)">Edit</button>
+              <button class="btn btn-danger" @click="del(inv.id)">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -27,17 +25,18 @@
 
     <div v-if="showModal" class="modal-overlay" @click.self="showModal=false">
       <div class="modal">
-        <h3>{{ editing ? 'Edit Payroll' : 'New Payroll Entry' }}</h3>
-        <div class="form-group"><label>Employee ID</label><input v-model="form.employee_id" /></div>
-        <div class="form-group"><label>Employee Name</label><input v-model="form.employee_name" /></div>
-        <div class="form-group"><label>Department</label><input v-model="form.department" /></div>
-        <div class="form-group"><label>Basic Salary ($)</label><input v-model="form.basic_salary" type="number" /></div>
-        <div class="form-group"><label>Allowances ($)</label><input v-model="form.allowances" type="number" /></div>
-        <div class="form-group"><label>Deductions ($)</label><input v-model="form.deductions" type="number" /></div>
-        <div class="form-group"><label>Pay Period (e.g. 2025-05)</label><input v-model="form.pay_period" /></div>
+        <h3>{{ editing ? 'Edit Invoice' : 'New Invoice' }}</h3>
+        <div class="form-group"><label>Invoice Number</label><input v-model="form.invoice_number" placeholder="INV-2025-001" /></div>
+        <div class="form-group"><label>Vendor Name</label><input v-model="form.vendor_name" /></div>
+        <div class="form-group"><label>Amount ($)</label><input v-model="form.amount" type="number" /></div>
+        <div class="form-group"><label>Due Date</label><input v-model="form.due_date" type="date" /></div>
         <div class="form-group">
           <label>Status</label>
-          <select v-model="form.status"><option value="pending">Pending</option><option value="processed">Processed</option></select>
+          <select v-model="form.status">
+            <option value="unpaid">Unpaid</option>
+            <option value="paid">Paid</option>
+            <option value="overdue">Overdue</option>
+          </select>
         </div>
         <div class="modal-actions">
           <button class="btn btn-outline" @click="showModal=false">Cancel</button>
@@ -52,25 +51,25 @@
 import { ref, onMounted } from 'vue'
 import api from '../../api/index.js'
 
-const payroll = ref([])
+const invoices = ref([])
 const showModal = ref(false)
 const editing = ref(null)
-const form = ref({ employee_id: '', employee_name: '', department: '', basic_salary: 0, allowances: 0, deductions: 0, pay_period: '', status: 'pending' })
+const form = ref({ invoice_number: '', vendor_name: '', amount: 0, due_date: '', status: 'unpaid' })
 
 const fmt = n => Number(n || 0).toLocaleString()
 
-async function load() { payroll.value = (await api.get('/payroll')).data || [] }
-function openModal(p = null) {
-  editing.value = p
-  form.value = p ? { ...p } : { employee_id: '', employee_name: '', department: '', basic_salary: 0, allowances: 0, deductions: 0, pay_period: '', status: 'pending' }
+async function load() { invoices.value = (await api.get('/invoices')).data || [] }
+function openModal(inv = null) {
+  editing.value = inv
+  form.value = inv ? { ...inv } : { invoice_number: '', vendor_name: '', amount: 0, due_date: '', status: 'unpaid' }
   showModal.value = true
 }
 async function save() {
-  if (editing.value) await api.put(`/payroll/${editing.value.id}`, form.value)
-  else await api.post('/payroll', form.value)
+  if (editing.value) await api.put(`/invoices/${editing.value.id}`, form.value)
+  else await api.post('/invoices', form.value)
   showModal.value = false; load()
 }
-async function del(id) { if (confirm('Delete?')) { await api.delete(`/payroll/${id}`); load() } }
+async function del(id) { if (confirm('Delete?')) { await api.delete(`/invoices/${id}`); load() } }
 
 onMounted(load)
 </script>
